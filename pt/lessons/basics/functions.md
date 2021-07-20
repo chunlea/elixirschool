@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.2.0
 title: Funções
 ---
 
@@ -45,9 +45,10 @@ iex> handle_result = fn
 ...> end
 
 iex> some_result = 1
+1
 iex> handle_result.({:ok, some_result})
 Handling result...
-
+:ok
 iex> handle_result.({:error})
 An error has occurred!
 ```

@@ -71,7 +71,7 @@ config :friends, Friends.Repo,
   hostname: "localhost"
 ```
 
-This configures how Ecto will connect to the database.
+This configures how Ecto will connect to the database. You may need to configure your database to have a matching credentials.
 
 It also creates a `Friends.Repo` module inside `lib/friends/repo.ex`
 
@@ -173,7 +173,7 @@ $ mix ecto.migrate
 Now that we've created our initial table we need to tell Ecto more about it, part of how we do that is through schemas.
 A schema is a module that defines mappings to the underlying database table's fields.
 
-While Ecto favors pluralize database table names, the schema is typically singular, so we'll create a `Person` schema to accomplany our table.
+While Ecto favors pluralize database table names, the schema is typically singular, so we'll create a `Person` schema to accompany our table.
 
 Let's create our new schema at `lib/friends/person.ex`:
 
@@ -192,7 +192,7 @@ Here we can see that the `Friends.Person` module tells Ecto that this schema rel
 
 Let's take a peek at our schema by opening `iex -S mix` and creating a new person:
 
-```shell
+```elixir
 iex> %Friends.Person{}
 %Friends.Person{age: 0, name: nil}
 ```
@@ -200,7 +200,7 @@ iex> %Friends.Person{}
 As expected we get a new `Person` with the default value applied to `age`.
 Now let's create a "real" person:
 
-```shell
+```elixir
 iex> person = %Friends.Person{name: "Tom", age: 11}
 %Friends.Person{age: 11, name: "Tom"}
 ```
@@ -224,7 +224,7 @@ Similarly, we can update our schemas just as we would any other map or struct in
 iex> %{person | age: 18}
 %Friends.Person{age: 18, name: "Tom"}
 iex> Map.put(person, :name, "Jerry")
-%Friends.Person{age: 11, name: "Jerry"}
+%Friends.Person{age: 18, name: "Jerry"}
 ```
 
 In our next lesson on Changesets, we'll look at how to validate our data changes and finally how to persist them to

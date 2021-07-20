@@ -24,8 +24,6 @@ $ mix new example
 * creating .gitignore
 * creating .formatter.exs
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/example.ex
 * creating test
@@ -36,7 +34,7 @@ $ mix new example
 Bu derste `mix.exs`'e odaklanacağız. Burada projemizin bağımlılıklarını, ortamını ve sürümümüzü yapılandırıyoruz. .  Dosyayı favori editörünüzle açın, şöyle bir şeyle karışılacaksınız (açıklamalar kaldırılmıştır):
 
 ```elixir
-defmodule Example.Mixfile do
+defmodule Example.Mix do
   use Mix.Project
 
   def project do

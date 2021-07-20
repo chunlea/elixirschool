@@ -1,5 +1,5 @@
 ---
-version: 1.0.1
+version: 1.0.2
 title: Αντιπαραβολές Προτύπων
 ---
 
@@ -30,6 +30,7 @@ iex> 2 = x
 ```elixir
 # Λίστες
 iex> list = [1, 2, 3]
+[1, 2, 3]
 iex> [1, 2, 3] = list
 [1, 2, 3]
 iex> [] = list
@@ -95,4 +96,9 @@ iex> greet.("Hello", "Sean")
 "Hi Sean"
 iex> greet.("Mornin'", "Sean")
 "Mornin', Sean"
+iex> greeting
+"Hello"
 ```
+
+Παρατηρήστε ότι στο παράδειγμα `"Mornin'"` η επανεκχώρηση του `greeting` στο `"Mornin'"` συμβαίνει μόνο μέσα στη συνάρτηση. Εξω από τη συνάρτηση `greeting` είναι ακόμα `"Hello"`.
+

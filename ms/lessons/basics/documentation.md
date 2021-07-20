@@ -49,7 +49,7 @@ end
 Kita (atau orang lain) boleh mencapai dokumentasi modul ini menggunakan fungsi helper `h` di dalam `iex`.
 
 ```elixir
-iex> c("greeter.ex")
+iex> c("greeter.ex", ".")
 [Greeter]
 
 iex> h Greeter
@@ -131,8 +131,6 @@ $ mix new greet_everyone
 * creating README.md
 * creating .gitignore
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/greet_everyone.ex
 * creating test

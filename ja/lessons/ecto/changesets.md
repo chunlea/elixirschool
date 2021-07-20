@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.2.2
 title: チェンジセット
 ---
 
@@ -19,7 +19,7 @@ Ectoは `Changeset` モジュールとデータ構造体という形で、デー
 
 ```elixir
 iex> %Ecto.Changeset{}
-#Ecto.Changeset<action: nil, changes: %{}, errors: [], data: nil, valid?: false>
+%Ecto.Changeset<action: nil, changes: %{}, errors: [], data: nil, valid?: false>
 ```
 
 見ての通り、便利そうなフィールドがいくつかありますが、全て空になっています。
@@ -40,48 +40,48 @@ defmodule Friends.Person do
 end
 ```
 
-`Person` スキーマを使うチェンジセットを作るためには、 `Ecto.Changeset.cast/4` を使います:
+`Person` スキーマを使うチェンジセットを作るためには、 `Ecto.Changeset.cast/3` を使います:
 
 ```elixir
 iex> Ecto.Changeset.cast(%Friends.Person{name: "Bob"}, %{}, [:name, :age])
-#Ecto.Changeset<action: nil, changes: %{}, errors: [], data: #Friends.Person<>,
+%Ecto.Changeset<action: nil, changes: %{}, errors: [], data: %Friends.Person<>,
  valid?: true>
 ```
 
 最初のパラメータは元のデータで、この場合は初期化された `%Friends.Person{}` 構造体です。
 Ectoは構造体そのものに基づいてスキーマを見つけることができます。
 2番目は私たちが行いたい変更であり、ただの空のマップです。
-3番目のパラメータが `cast/4` を特別なものにします。これは通過させることを許可するフィールドのリストであり、これによってどのフィールドが変更可能なのかを制御可能とし、残りを安全に保護します。
+3番目のパラメータが `cast/3` を特別なものにします。これは通過させることを許可するフィールドのリストであり、これによってどのフィールドが変更可能なのかを制御可能とし、残りを安全に保護します。
 
 ```elixir
 iex> Ecto.Changeset.cast(%Friends.Person{name: "Bob"}, %{"name" => "Jack"}, [:name, :age])
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: "Jack"},
   errors: [],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: true
 >
 
 iex> Ecto.Changeset.cast(%Friends.Person{name: "Bob"}, %{"name" => "Jack"}, [])
-#Ecto.Changeset<action: nil, changes: %{}, errors: [], data: #Friends.Person<>,
+%Ecto.Changeset<action: nil, changes: %{}, errors: [], data: %Friends.Person<>,
  valid?: true>
 ```
 
 2回目では新しいnameが明示的に許可されていないため、無視されていることがわかるでしょう。
 
-`cast/4` の代わりとして `change/2` もあり、これは `cast/4` のように変更をフィルタリングする機能を持ちません。
+`cast/3` の代わりとして `change/2` もあり、これは `cast/3` のように変更をフィルタリングする機能を持ちません。
 これは変更を加えるソースが信頼できるとき、あるいは手動でデータを扱う時に便利です。
 
 ここではチェンジセットを作りましたが、バリデーションを持っていないので、personのnameにあらゆる変更が受け付けられてしまい、その結果、空の名前になる可能性もあります。
 
 ```elixir
 iex> Ecto.Changeset.cast(%Friends.Person{name: "Bob"}, %{"name" => ""}, [:name, :age])
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: nil},
   errors: [],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: true
 >
 ```
@@ -106,7 +106,7 @@ defmodule Friends.Person do
 end
 ```
 
-これで `cast/4` 関数を直接使うことができます。
+これで `cast/3` 関数を直接使うことができます。
 
 1つのスキーマに複数のチェンジセット作成関数を持つことはよくあります。まずは、構造体、変更のマップを受け取って、チェンジセットを返すものを作りましょう:
 
@@ -132,11 +132,11 @@ end
 
 ```elixir
 iex> Friends.Person.changeset(%Friends.Person{}, %{"name" => ""})
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{},
   errors: [name: {"can't be blank", [validation: :required]}],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: false
 >
 ```
@@ -159,7 +159,7 @@ nameに対して1つの文字を渡した場合、どのような結果になる
 
 ```elixir
 iex> User.changeset(%User{}, %{"name" => "A"})
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: "A"},
   errors: [
@@ -222,11 +222,11 @@ end
 
 ```elixir
 iex> Friends.Person.changeset(%Friends.Person{}, %{"name" => "Bob"})
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: "Bob"},
   errors: [name: {"is not a superhero", []}],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: false
 >
 ```
@@ -266,11 +266,11 @@ end
 
 ```elixir
 iex> Friends.Person.registration_changeset(%Friends.Person{}, %{})
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: "Anonymous"},
   errors: [],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: true
 >
 ```

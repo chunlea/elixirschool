@@ -1,5 +1,5 @@
 ---
-version: 1.0.2
+version: 1.1.1
 title: GenStage
 ---
 
@@ -9,7 +9,7 @@ Nesta lição vamos examinar de perto o GenStage, para que serve e como podemos 
 
 ## Introdução
 
-Então, o que é GenStage? De acordo com a documentação oficial, ele é uma "especificação e um fluxo computacional para o Elixir", mas o que isso significa pra nós?
+Então, o que é GenStage? De acordo com a documentação oficial, é uma "especificação e um fluxo computacional para o Elixir", mas o que isso significa pra nós?
 
 Significa que o GenStage nos fornece uma forma de definir um pipeline de trabalho a ser realizado por passos independentes (ou etapas) em processos separados; se você já trabalhou com pipelines anteriormente, então alguns desses conceitos devem ser familiares.
 
@@ -57,7 +57,7 @@ Vamos atualizar nossas dependências no `mix.exs` para incluir `gen_stage`:
 ```elixir
 defp deps do
   [
-    {:gen_stage, "~> 0.11"}
+    {:gen_stage, "~> 1.0.0"}
   ]
 end
 ```
@@ -75,7 +75,6 @@ Agora estamos prontos para construir nosso produtor!
 O primeiro passo da nossa aplicação GenStage é criar nosso produtor. Conforme falamos antes, queremos criar um produtor que emite um fluxo constante de números. Vamos criar o arquivo do nosso produtor:
 
 ```shell
-$ mkdir lib/genstage_example
 $ touch lib/genstage_example/producer.ex
 ```
 
@@ -118,7 +117,7 @@ defmodule GenstageExample.ProducerConsumer do
 
   require Integer
 
-  def start_link do
+  def start_link(_initial) do
     GenStage.start_link(__MODULE__, :state_doesnt_matter, name: __MODULE__)
   end
 
@@ -138,7 +137,7 @@ end
 
 Você deve ter notado com nosso produtor-consumidor que introduzimos uma nova opção no `init/1` e uma nova função: `handle_events/3`. Com a opção `subscribe_to`, instruímos o GenStage a nos colocar em comunicação com um produtor específico.
 
-A função `handle_events/3` é nosso cavalo de batalha, onde recebemos nossos eventos de entrada, os processamos, e retornamos nosso conjunto modificado. Como veremos, consumidores são implementados de de maneira muito semelhante, mas a diferença importante é que nossa função `handle_events/3` retorna e como ela é usada. Quando rotulamos nosso processo um produtor_consumidor, o segundo argumento da nossa tupla — `numbers` no nosso caso — é usado para conhecer a demanda de consumidores. Em consumidores esse valor é descartado.
+A função `handle_events/3` é nosso cavalo de batalha, onde recebemos nossos eventos de entrada, os processamos, e retornamos nosso conjunto modificado. Como veremos, consumidores são implementados de maneira muito semelhante, mas a diferença importante é que nossa função `handle_events/3` retorna e como ela é usada. Quando rotulamos nosso processo um produtor_consumidor, o segundo argumento da nossa tupla — `numbers` no nosso caso — é usado para conhecer a demanda de consumidores. Em consumidores esse valor é descartado.
 
 ## Consumidor
 
@@ -154,7 +153,7 @@ Uma vez que consumidores e produtores-consumidores são tão similares, nosso c�
 defmodule GenstageExample.Consumer do
   use GenStage
 
-  def start_link do
+  def start_link(_initial) do
     GenStage.start_link(__MODULE__, :state_doesnt_matter)
   end
 
@@ -186,9 +185,9 @@ def start(_type, _args) do
   import Supervisor.Spec, warn: false
 
   children = [
-    worker(GenstageExample.Producer, [0]),
-    worker(GenstageExample.ProducerConsumer, []),
-    worker(GenstageExample.Consumer, [])
+    {GenstageExample.Producer, 0},
+    {GenstageExample.ProducerConsumer, []},
+    {GenstageExample.Consumer, []}
   ]
 
   opts = [strategy: :one_for_one, name: GenstageExample.Supervisor]
@@ -221,10 +220,16 @@ Se examinarmos a saída do `IO.inspect/1` do nosso exemplo, vemos que todo event
 
 ```elixir
 children = [
-  worker(GenstageExample.Producer, [0]),
-  worker(GenstageExample.ProducerConsumer, []),
-  worker(GenstageExample.Consumer, [], id: 1),
-  worker(GenstageExample.Consumer, [], id: 2)
+  {GenstageExample.Producer, 0},
+  {GenstageExample.ProducerConsumer, []},
+  %{
+    id: 1,
+    start: {GenstageExample.Consumer, :start_link, [[]]}
+  },
+  %{
+    id: 2,
+    start: {GenstageExample.Consumer, :start_link, [[]]}
+  },
 ]
 ```
 
@@ -232,10 +237,10 @@ Agora que configuramos dois consumidores, vamos ver o que obtemos se rodarmos no
 
 ```shell
 $ mix run --no-halt
+{#PID<0.120.0>, 0, :state_doesnt_matter}
 {#PID<0.120.0>, 2, :state_doesnt_matter}
-{#PID<0.121.0>, 4, :state_doesnt_matter}
+{#PID<0.120.0>, 4, :state_doesnt_matter}
 {#PID<0.120.0>, 6, :state_doesnt_matter}
-{#PID<0.120.0>, 8, :state_doesnt_matter}
 ...
 {#PID<0.120.0>, 86478, :state_doesnt_matter}
 {#PID<0.121.0>, 87338, :state_doesnt_matter}

@@ -47,7 +47,7 @@ end
 Ние (или други) могат да достъпят тази документация, чрез помощната функция `h` в IEx.
 
 ```elixir
-iex> c("greeter.ex")
+iex> c("greeter.ex", ".")
 [Greeter]
 
 iex> h Greeter
@@ -133,8 +133,6 @@ $ mix new greet_everyone
 * creating .gitignore
 * creating .formatter.exs
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/greet_everyone.ex
 * creating test

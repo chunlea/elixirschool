@@ -49,9 +49,10 @@ iex> handle_result = fn
 ...> end
 
 iex> some_result = 1
+1
 iex> handle_result.({:ok, some_result})
 Handling result...
-
+:ok
 iex> handle_result.({:error})
 An error has occurred!
 ```
@@ -247,11 +248,11 @@ person = %{name: "Fred", age: "95", favorite_color: "Taupe"}
 "Hello, Fred"
 %{age: "95", favorite_color: "Taupe", name: "Fred"}
 # call with only the name key
-...> Greeter4.hello(%{name: "Fred"})
+...> Greeter2.hello(%{name: "Fred"})
 "Hello, Fred"
 %{name: "Fred"}
 # call without the name key
-...> Greeter4.hello(%{age: "95", favorite_color: "Taupe"})
+...> Greeter2.hello(%{age: "95", favorite_color: "Taupe"})
 ** (FunctionClauseError) no function clause matching in Greeter2.hello/1
 
     The following arguments were given to Greeter2.hello/1:

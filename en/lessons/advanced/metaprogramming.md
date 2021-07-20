@@ -1,5 +1,5 @@
 ---
-version: 1.0.2
+version: 1.0.3
 title: Metaprogramming
 ---
 
@@ -7,7 +7,7 @@ Metaprogramming is the process of using code to write code.
 In Elixir this gives us the ability to extend the language to fit our needs and dynamically change the code.
 We'll start by looking at how Elixir is represented under the hood, then how to modify it, and finally we can use this knowledge to extend it.
 
-A word of caution:  Metaprogramming is tricky and should only be used when necessary.
+A word of caution: Metaprogramming is tricky and should only be used when necessary.
 Overuse will almost certainly lead to complex code that is difficult to understand and debug.
 
 {% include toc.html %}
@@ -35,7 +35,7 @@ iex> quote do: if value, do: "True", else: "False"
  [{:value, [], Elixir}, [do: "True", else: "False"]]}
 ```
 
-Notice the first three don't return tuples?  There are five literals that return themselves when quoted:
+Notice the first three don't return tuples? There are five literals that return themselves when quoted:
 
 ```elixir
 iex> :atom
@@ -52,7 +52,7 @@ iex> {"hello", :world} # 2 element tuples
 
 ## Unquote
 
-Now that we can retrieve the internal structure of our code, how do we modify it?  To inject new code or values we use `unquote/1`.
+Now that we can retrieve the internal structure of our code, how do we modify it? To inject new code or values we use `unquote/1`.
 When we unquote an expression it will be evaluated and injected into the AST.
 To demonstrate `unquote/1` let's look at some examples:
 
@@ -225,7 +225,7 @@ iex> val
 42
 ```
 
-What if we wanted to manipulate the value of `val`?  To mark a variable as being unhygienic we can use `var!/2`.
+What if we wanted to manipulate the value of `val`? To mark a variable as being unhygienic we can use `var!/2`.
 Let's update our example to include another macro utilizing `var!/2`:
 
 ```elixir
@@ -267,7 +267,7 @@ We already covered the usefulness of `unquote/1`, but there's another way to inj
 With variable binding we are able to include multiple variables in our macro and ensure they're only unquoted once, avoiding accidental revaluations.
 To use bound variables we need to pass a keyword list to the `bind_quoted` option in `quote/2`.
 
-To see the benefit of `bind_quote` and to demonstrate the revaluation issue let's use an example.
+To see the benefit of `bind_quoted` and to demonstrate the revaluation issue let's use an example.
 We can start by creating a macro that simply outputs the expression twice:
 
 ```elixir
@@ -290,7 +290,7 @@ iex> Example.double_puts(:os.system_time)
 1450475941851733000
 ```
 
-The times are different!  What happened?  Using `unquote/1` on the same expression multiple times results in revaluation and that can have unintended consequences.
+The times are different! What happened? Using `unquote/1` on the same expression multiple times results in revaluation and that can have unintended consequences.
 Let's update the example to use `bind_quoted` and see what we get:
 
 ```elixir

@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.1.1
 title: Mix
 ---
 
@@ -24,8 +24,6 @@ $ mix new example
 * creating .gitignore
 * creating .formatter.exs
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/example.ex
 * creating test
@@ -36,7 +34,7 @@ $ mix new example
 这篇课程我们只关心 `mix.exs` 这个文件，因为我们会用这个文件配置应用、依赖、环境信息还有版本。用你最喜欢的编辑器打开这个文件，你会看到类似下面的内容（简洁起见，注释已经删除）：
 
 ```elixir
-defmodule Example.Mixfile do
+defmodule Example.Mix do
   use Mix.Project
 
   def project do

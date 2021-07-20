@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.2.2
 title: Наборы изменений
 ---
 
@@ -18,7 +18,7 @@ Ecto полностью покрывает эту потребность при 
 
 ```elixir
 iex> %Ecto.Changeset{}
-#Ecto.Changeset<action: nil, changes: %{}, errors: [], data: nil, valid?: false>
+%Ecto.Changeset<action: nil, changes: %{}, errors: [], data: nil, valid?: false>
 ```
 
 Как можно заметить, здесь присутствуют некоторые потенциально полезные поля, но все они пусты.
@@ -39,48 +39,48 @@ defmodule Friends.Person do
 end
 ```
 
-Чтобы создать набор изменений, используя схему `Person`, воспользуемся функцией `Ecto.Changeset.cast/4`:
+Чтобы создать набор изменений, используя схему `Person`, воспользуемся функцией `Ecto.Changeset.cast/3`:
 
 ```elixir
 iex> Ecto.Changeset.cast(%Friends.Person{name: "Bob"}, %{}, [:name, :age])
-#Ecto.Changeset<action: nil, changes: %{}, errors: [], data: #Friends.Person<>,
+%Ecto.Changeset<action: nil, changes: %{}, errors: [], data: %Friends.Person<>,
  valid?: true>
 ```
 
 Первый параметр — это имеющиеся данные. В данном случае это структура `%Friends.Person{}`.
 Ecto самостоятельно найдёт схему, соответствующую переданной структуре.
 Вторым по очереди идёт изменение, которое мы хотим осуществить — пустой словарь.
-Третий параметр специфичен для `cast/4` — это список полей, которым мы разрешаем измениться. Таким образом, у нас есть полный контроль над тем, какие поля могут быть изменены в ходе операции, а какие должны остаться нетронутыми.
+Третий параметр специфичен для `cast/3` — это список полей, которым мы разрешаем измениться. Таким образом, у нас есть полный контроль над тем, какие поля могут быть изменены в ходе операции, а какие должны остаться нетронутыми.
 
 ```elixir
 iex> Ecto.Changeset.cast(%Friends.Person{name: "Bob"}, %{"name" => "Jack"}, [:name, :age])
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: "Jack"},
   errors: [],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: true
 >
 
 iex> Ecto.Changeset.cast(%Friends.Person{name: "Bob"}, %{"name" => "Jack"}, [])
-#Ecto.Changeset<action: nil, changes: %{}, errors: [], data: #Friends.Person<>,
+%Ecto.Changeset<action: nil, changes: %{}, errors: [], data: %Friends.Person<>,
  valid?: true>
 ```
 
 На втором примере видно, что имя в результате выполнения не было изменено, поскольку мы не разрешили этого в явном виде.
 
-Альтернативой функции `cast/4` выступает функция `change/2`, у которой нет механизма фильтрации изменяемых полей.
+Альтернативой функции `cast/3` выступает функция `change/2`, у которой нет механизма фильтрации изменяемых полей.
 Эта функция будет полезной в случаях, когда мы доверяем источнику изменений или уже проверили данные вручную.
 
 Теперь можно создавать наборы изменений, но поскольку у нас ещё нет никакой валидации, любое изменение имени будет применено. Например, полностью пустое имя:
 
 ```elixir
 iex> Ecto.Changeset.cast(%Friends.Person{name: "Bob"}, %{"name" => ""}, [:name, :age])
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: nil},
   errors: [],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: true
 >
 ```
@@ -105,7 +105,7 @@ defmodule Friends.Person do
 end
 ```
 
-Теперь можно использовать функцию `cast/4` напрямую.
+Теперь можно использовать функцию `cast/3` напрямую.
 
 Как правило, в каждой схеме для создания набора изменений объявляют одну или несколько специальный функций. Мы поступим так же. Наша функция будет принимать структуру и словарь с изменениями, а возвращать набор изменений:
 
@@ -131,11 +131,11 @@ end
 
 ```elixir
 iex> Friends.Person.changeset(%Friends.Person{}, %{"name" => ""})
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{},
   errors: [name: {"can't be blank", [validation: :required]}],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: false
 >
 ```
@@ -158,14 +158,14 @@ end
 
 ```elixir
 iex> Friends.Person.changeset(%Friends.Person{}, %{"name" => "A"})
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: "A"},
   errors: [
     name: {"should be at least %{count} character(s)",
      [count: 2, validation: :length, kind: :min, type: :string]}
   ],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: false
 >
 ```
@@ -220,11 +220,11 @@ end
 
 ```elixir
 iex> Friends.Person.changeset(%Friends.Person{}, %{"name" => "Bob"})
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: "Bob"},
   errors: [name: {"is not a superhero", []}],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: false
 >
 ```
@@ -264,11 +264,11 @@ end
 
 ```elixir
 iex> Friends.Person.registration_changeset(%Friends.Person{}, %{})
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: "Аноним"},
   errors: [],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: true
 >
 ```

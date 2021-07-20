@@ -1,5 +1,5 @@
 ---
-version: 1.2.0
+version: 1.2.2
 title: Changesets
 ---
 
@@ -18,7 +18,7 @@ Let's look at an empty `%Changeset{}` struct:
 
 ```elixir
 iex> %Ecto.Changeset{}
-#Ecto.Changeset<action: nil, changes: %{}, errors: [], data: nil, valid?: false>
+%Ecto.Changeset<action: nil, changes: %{}, errors: [], data: nil, valid?: false>
 ```
 
 As you can see, it has some potentially useful fields, but they are all empty.
@@ -39,46 +39,46 @@ defmodule Friends.Person do
 end
 ```
 
-To create a changeset using the `Person` schema, we are going to use `Ecto.Changeset.cast/4`:
+To create a changeset using the `Person` schema, we are going to use `Ecto.Changeset.cast/3`:
 
 ```elixir
 iex> Ecto.Changeset.cast(%Friends.Person{name: "Bob"}, %{}, [:name, :age])
-#Ecto.Changeset<action: nil, changes: %{}, errors: [], data: #Friends.Person<>,
+%Ecto.Changeset<action: nil, changes: %{}, errors: [], data: %Friends.Person<>,
  valid?: true>
 ```
 
 The first parameter is the original data — an initial `%Friends.Person{}` struct in this case.
 Ecto is smart enough to find the schema based on the struct itself.
 Second in order are the changes we want to make — just an empty map.
-The third parameter is what makes `cast/4` special: it is a list of fields allowed to go through, which gives us the ability to control what fields can be changed and safe-guard the rest.
+The third parameter is what makes `cast/3` special: it is a list of fields allowed to go through, which gives us the ability to control what fields can be changed and safe-guard the rest.
 
 ```elixir
 iex> Ecto.Changeset.cast(%Friends.Person{name: "Bob"}, %{"name" => "Jack"}, [:name, :age])
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: "Jack"},
   errors: [],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: true
 >
 
 iex> Ecto.Changeset.cast(%Friends.Person{name: "Bob"}, %{"name" => "Jack"}, [])
-#Ecto.Changeset<action: nil, changes: %{}, errors: [], data: #Friends.Person<>,
+%Ecto.Changeset<action: nil, changes: %{}, errors: [], data: %Friends.Person<>,
  valid?: true>
 ```
 
 You can see how the new name was ignored the second time, where it was not explicitly allowed.
 
-An alternative to `cast/4` is the `change/2` function, which doesn't have the ability to filter changes like `cast/4`.
+An alternative to `cast/3` is the `change/2` function, which doesn't have the ability to filter changes like `cast/3`.
 It is useful when you trust the source making the changes or when you work with data manually.
 
 Now we can create changesets, but since we do not have validation, any changes to person's name will be accepted, so we can end up with an empty name:
 
 ```elixir
-iex> Ecto.Changeset.change(%Friends.Person{name: "Bob"}, %{"name" => ""})
+iex> Ecto.Changeset.change(%Friends.Person{name: "Bob"}, %{name: ""})
 #Ecto.Changeset<
   action: nil,
-  changes: %{name: nil},
+  changes: %{name: ""},
   errors: [],
   data: #Friends.Person<>,
   valid?: true
@@ -105,7 +105,7 @@ defmodule Friends.Person do
 end
 ```
 
-Now we can use the `cast/4` function directly.
+Now we can use the `cast/3` function directly.
 
 It is common to have one or more changeset creator functions for a schema. Let's make one that accepts a struct, a map of changes, and returns a changeset:
 
@@ -131,11 +131,11 @@ Note: do not forget to run `recompile()` when working in `iex`, otherwise it won
 
 ```elixir
 iex> Friends.Person.changeset(%Friends.Person{}, %{"name" => ""})
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{},
   errors: [name: {"can't be blank", [validation: :required]}],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: false
 >
 ```
@@ -158,14 +158,14 @@ You can try and guess what the result would be if we pass a name that consists o
 
 ```elixir
 iex> Friends.Person.changeset(%Friends.Person{}, %{"name" => "A"})
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: "A"},
   errors: [
     name: {"should be at least %{count} character(s)",
      [count: 2, validation: :length, kind: :min, type: :string]}
   ],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: false
 >
 ```
@@ -221,11 +221,11 @@ end
 
 ```elixir
 iex> Friends.Person.changeset(%Friends.Person{}, %{"name" => "Bob"})
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: "Bob"},
   errors: [name: {"is not a superhero", []}],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: false
 >
 ```
@@ -265,11 +265,11 @@ Now we don't have to pass a `name` and `Anonymous` would be automatically set, a
 
 ```elixir
 iex> Friends.Person.registration_changeset(%Friends.Person{}, %{})
-#Ecto.Changeset<
+%Ecto.Changeset<
   action: nil,
   changes: %{name: "Anonymous"},
   errors: [],
-  data: #Friends.Person<>,
+  data: %Friends.Person<>,
   valid?: true
 >
 ```
@@ -287,5 +287,5 @@ end
 
 ## Conclusion
 
-There a lot of use cases and functionality that we did not cover in this lesson, such as [schemaless changesets](https://hexdocs.pm/ecto/Ecto.Changeset.html#module-schemaless-changesets) that you can use to validate _any_ data; or dealing with side-effects alongside the changeset ([`prepare_changes/2`](https://hexdocs.pm/ecto/Ecto.Changeset.html#prepare_changes/2)) or working with associations and embeds.
+There are a lot of use cases and functionality that we did not cover in this lesson, such as [schemaless changesets](https://hexdocs.pm/ecto/Ecto.Changeset.html#module-schemaless-changesets) that you can use to validate _any_ data; or dealing with side-effects alongside the changeset ([`prepare_changes/2`](https://hexdocs.pm/ecto/Ecto.Changeset.html#prepare_changes/2)) or working with associations and embeds.
 We may cover these in a future, advanced lesson, but in the meantime — we encourage to explore [Ecto Changeset's documentation](https://hexdocs.pm/ecto/Ecto.Changeset.html) for more information.

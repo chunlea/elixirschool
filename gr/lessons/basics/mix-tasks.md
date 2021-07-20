@@ -1,5 +1,5 @@
 ---
-version: 1.0.1
+version: 1.2.0
 title: Ειδικές Εργασίες Mix
 ---
 
@@ -27,7 +27,8 @@ $ mix phx.new my_phoenix_app
 ```
 
 Όπως μπορούμε να δούμε από την εντολή κονσόλας από πάνω, ο σκελετός εφαρμογών Phoenix έχει ειδική εργασία Mix για να δημιουργεί ένα νέο project.
-Θα μπορούσαμε να δημιουργήσουμε κάτι παρόμοιο για τα projects μας;  Μπορούμε, και η Elixir το κάνει πολύ έυκολο για εμάς.
+Θα μπορούσαμε να δημιουργήσουμε κάτι παρόμοιο για τo project μας;  Μπορούμε, και η Elixir το κάνει πολύ έυκολο για εμάς.
+
 
 ## Εγκατάσταση
 
@@ -39,8 +40,6 @@ $ mix new hello
 * creating README.md
 * creating .gitignore
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/hello.ex
 * creating test
@@ -61,7 +60,7 @@ Run "mix help" for more commands.
 ```elixir
 defmodule Hello do
   @doc """
-  Εμφανίζει το "Γειά σου, Κόσμε!" κάθε φορά.
+  Outputs "Γειά σου, Κόσμε!" every time.
   """
   def say do
     IO.puts("Γειά σου, Κόσμε!")
@@ -79,9 +78,9 @@ end
 defmodule Mix.Tasks.Hello do
   use Mix.Task
 
-  @shortdoc "Απλά τρέχει την εντολή Hello.say/0 ."
+  @shortdoc "Simply calls the Hello.say/0 function."
   def run(_) do
-    # καλεί την συνάρτηση Hello.say() από πριν
+    # καλεί την συνάρτηση μας Hello.say() από πριν
     Hello.say()
   end
 end
@@ -90,7 +89,28 @@ end
 Παρατηρείστε πως ξεκινούμε την δήλωση defmodule με το `Mix.Tasks` και το όνομα που θέλουμε να καλέσουμε από τη γραμμή εντολών.
 Στη δεύτερη γραμμή παρουσιάζουμε την `use Mix.Task` η οποία φέρνει τη συμπεριφορά της `Mix.Task` στο namespace.
 Μετά ορίζουμε μια συνάρτηση run η οποία αγνοεί όλα τα ορίσματα για τώρα.
-Μέσα στη συνάρτηση, καλούμε την ενότητα `Hello` και τη συνάρτηση `say`.
+Μέσα στη συνάρτηση, καλούμε την ενότητα μας `Hello` και τη συνάρτηση `say`.
+
+## Φόρτωση της εφαρμογής
+
+Το Mix δεν ξεκινά αυτόματα την εφαρμογή μας ούτε κάποια απο τις εξαρτήσεις της, το οποίο δεν είναι πρόβλημα για αρκετές περιπτώσεις χρήσης της εργασίας Mix, τι συμβαίνει όμως αν θέλουμε να χρησιμοποιήσουμε το Ecto και να αλληλεπιδράσουμε με μια βάση δεδομένων; Σε αυτή την περίπτωση πρέπει να βεβαιωθούμε οτι η εφαρμογή του Ecto.Repo έχει εκκινηθεί.
+Υπάρχουν 2 τρόποι για να το χειριστούμε: ξεκινώντας ρητά μια εφαρμογή ή ξεκινώντας την εφαρμογή μας η οποία με την σειρά της θα εκκινήσει τις υπόλοιπες.
+
+Ας δούμε πως μπορούμε να ενημερώσουμε το Mix task, ώστε να ξεκινά την εφαρμογή και τις εξαρτήσεις μας:
+
+```elixir
+defmodule Mix.Tasks.Hello do
+  use Mix.Task
+
+  @shortdoc "Simply calls the Hello.say/0 function."
+  def run(_) do
+    # This will start our application
+    Mix.Task.run("app.start")
+
+    Hello.say()
+  end
+end
+```
 
 ## Εργασίες Mix εν Δράσει
 

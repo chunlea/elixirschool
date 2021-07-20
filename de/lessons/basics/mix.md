@@ -24,8 +24,6 @@ An der Ausgabe können wir sehen, dass mix unser Verzeichnis und eine Sammlung a
 * creating .gitignore
 * creating .formatter.exs
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/example.ex
 * creating test
@@ -36,7 +34,7 @@ An der Ausgabe können wir sehen, dass mix unser Verzeichnis und eine Sammlung a
 In dieser Lektion konzentieren wir uns auf `mix.exs`. Wir konfigurieren unsere Anwendung, Abhängigkeiten, Umgebung und Version. Öffne die Datei mit deinem Editor und du solltest etwas Ähnliches wie hier sehen (Kommentare für die Lesbarkeit entfernt):
 
 ```elixir
-defmodule Example.Mixfile do
+defmodule Example.Mix do
   use Mix.Project
 
   def project do

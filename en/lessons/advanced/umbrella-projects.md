@@ -1,5 +1,5 @@
 ---
-version: 1.0.1
+version: 1.0.3
 title: Umbrella Projects
 ---
 
@@ -40,7 +40,7 @@ for each application in the apps/ directory.
 As you can see from the shell command, Mix created a small skeleton project for us with two directories:
 
   - `apps/` - where our sub (child) projects will reside
-  - `config/` - where our umbrella projects configuration will live
+  - `config/` - where our umbrella project's configuration will live
 
 
 ## Child projects
@@ -53,8 +53,6 @@ $ mix new utilities
 * creating README.md
 * creating .gitignore
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/utilities.ex
 * creating test
@@ -75,8 +73,6 @@ $ mix new datasets
 * creating README.md
 * creating .gitignore
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/datasets.ex
 * creating test
@@ -96,8 +92,6 @@ $ mix new svm
 * creating README.md
 * creating .gitignore
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/svm.ex
 * creating test
@@ -122,8 +116,6 @@ $ tree
 ├── apps
 │   ├── datasets
 │   │   ├── README.md
-│   │   ├── config
-│   │   │   └── config.exs
 │   │   ├── lib
 │   │   │   └── datasets.ex
 │   │   ├── mix.exs
@@ -132,8 +124,6 @@ $ tree
 │   │       └── test_helper.exs
 │   ├── svm
 │   │   ├── README.md
-│   │   ├── config
-│   │   │   └── config.exs
 │   │   ├── lib
 │   │   │   └── svm.ex
 │   │   ├── mix.exs
@@ -142,8 +132,6 @@ $ tree
 │   │       └── test_helper.exs
 │   └── utilities
 │       ├── README.md
-│       ├── config
-│       │   └── config.exs
 │       ├── lib
 │       │   └── utilities.ex
 │       ├── mix.exs
@@ -155,7 +143,7 @@ $ tree
 └── mix.exs
 ```
 
-If we change back to the umbrella projects root, we can see that we can call all the typical commands such as compile.
+If we change back to the umbrella project's root, we can see that we can call all the typical commands such as compile.
 As the sub projects are just normal applications, you can change into their directories and do all the same stuff as usual that Mix enables you to do.
 
 ```bash

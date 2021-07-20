@@ -1,5 +1,5 @@
 ---
-version: 2.3.0
+version: 2.4.0
 title: 基本
 ---
 
@@ -37,8 +37,8 @@ $ cd friends
 ```elixir
   defp deps do
     [
-      {:ecto, "~> 2.0"},
-      {:postgrex, "~> 0.11"}
+      {:ecto_sql, "~> 3.2"},
+      {:postgrex, "~> 0.15"}
     ]
   end
 ```
@@ -65,7 +65,6 @@ $ mix ecto.gen.repo -r Friends.Repo
 
 ```elixir
 config :friends, Friends.Repo,
-  adapter: Ecto.Adapters.Postgres,
   database: "friends_repo",
   username: "postgres",
   password: "",
@@ -73,17 +72,18 @@ config :friends, Friends.Repo,
 ```
 
 これはEctoがどのようにデータベースと接続するかを構成します。
-`Ecto.Adapters.Postgres` アダプタをどのように選択したかを覚えておいてください。
 
 またこれは `lib/friends/repo.ex` の中に `Friends.Repo` を作ります。
 
 ```elixir
 defmodule Friends.Repo do
-  use Ecto.Repo, otp_app: :friends
+  use Ecto.Repo, 
+    otp_app: :friends,
+    adapter: Ecto.Adapters.Postgres
 end
 ```
 
-データベースにクエリを発行するには `Friends.Repo` を使います。また、このモジュールに対してElixirアプリ `:friends` 内のデータベース接続情報を見つけるように指示を出します。
+データベースにクエリを発行するには `Friends.Repo` を使います。また、このモジュールに対してElixirアプリ `:friends` 内のデータベース接続情報を見つけるように指示を出し、adapterは `Ecto.Adapters.Postgres` を選択します。
 
 次に、 `lib/friends/application.ex` の中で `Friends.Repo` をアプリケーションのスーパーバイザーツリーにおけるスーパーバイザーとして設定します。  
 これによって、アプリケーション開始時にEctoプロセスを開始します。
@@ -192,7 +192,7 @@ end
 
 `iex -S mix` を開いて新しい人を作ることで、このスキーマを覗いてみましょう:
 
-```shell
+```elixir
 iex> %Friends.Person{}
 %Friends.Person{age: 0, name: nil}
 ```
@@ -200,7 +200,7 @@ iex> %Friends.Person{}
 期待通りデフォルト値が適用された `age` を持つ `Person` ができました。
 それでは"本当の"人を作ってみましょう:
 
-```shell
+```elixir
 iex> person = %Friends.Person{name: "Tom", age: 11}
 %Friends.Person{age: 11, name: "Tom"}
 ```

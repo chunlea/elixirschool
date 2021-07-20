@@ -50,7 +50,7 @@ end
 Biz veya diğer insanlar IEx içinde  `h` yardımcı fonksiyonu ile bu modül belgelerine erişe bilirler.
 
 ```elixir
-iex> c("greeter.ex")
+iex> c("greeter.ex", ".")
 [Greeter]
 
 iex> h Greeter
@@ -135,8 +135,6 @@ $ mix new greet_everyone
 * creating .formatter.exs
 * creating .gitignore
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/greet_everyone.ex
 * creating test

@@ -1,7 +1,7 @@
 ---
 author: Sophie DeBenedetto
 author_link: https://github.com/sophiedebenedetto
-categories: post
+categories: general
 date: 2019-05-21
 layout: post
 title:  Tracking Users in a Chat App with LiveView, PubSub Presence
@@ -62,7 +62,7 @@ defmodule PhatWeb.ChatLiveView do
      assign(socket,
        chat: chat,
        message: Chats.change_message(),
-       current_user: current_user,
+       current_user: current_user
      )}
   end
 end
@@ -145,7 +145,7 @@ def mount(%{chat: chat, current_user: current_user}, socket) do
    assign(socket,
      chat: chat,
      message: Chats.change_message(),
-     current_user: current_user,
+     current_user: current_user
    )}
 end
 ```
@@ -156,7 +156,7 @@ Then, we need to teach our live view to broadcast new messages to these subscrib
 
 def handle_event("message", %{"message" => message_params}, socket) do
   chat = Chats.create_message(message_params)
-  PhatWeb.Endpoint.broadcast_from(self(), topic(chat.id), "message", %{chat: chat})
+  PhatWeb.Endpoint.broadcast_from(topic(chat.id), self(), "message", %{chat: chat})
   {:noreply, assign(socket, chat: chat, message: Chats.change_message())}
 end
 ```
@@ -255,7 +255,7 @@ The Presence process's state for the given topic will look something like this:
 
 When we call `Presence.track`, Presence will broadcast a `"presence_diff"` event over its PubSub backend. We told our Presence module to use the same PubSub server as the rest of the application––the very same server that backs our `PhatWeb.Endpoint`.
 
-Recall that our live view clients are subscribing to this PubSub server via the following call in the `mount/2` function: ` PhatWeb.Endpoint.subscribe(topic(chat.id))`. So, these subscribing LiveView processes will receive the `"presence_diff"` event, which looks something like this:
+Recall that our live view clients are subscribing to this PubSub server via the following call in the `mount/2` function: `PhatWeb.Endpoint.subscribe(topic(chat.id))`. So, these subscribing LiveView processes will receive the `"presence_diff"` event, which looks something like this:
 
 ```elixir
 %{
@@ -327,7 +327,7 @@ First, we use the `Presence.list/1` function to get the collection of present us
         email: "beini@email.com",
         first_name: "Beini",
         phx_ref: "ZZ30QuoI/8s="
-        user_id: 1
+        user_id: 2
       }
   }
   ...
@@ -346,14 +346,12 @@ Once we fetch this list, we iterate over it to collect a list of the individual 
     phx_ref: "TNV4PzRfyhw="
     user_id: 1
   },
-  "2" => %{
-    metas: [
-      %{
-        email: "beini@email.com",
-        first_name: "Beini",
-        phx_ref: "ZZ30QuoI/8s="
-        user_id: 1
-      }
+  %{
+    email: "beini@email.com",
+    first_name: "Beini",
+    phx_ref: "ZZ30QuoI/8s="
+    user_id: 2
+   }
   }
 ]
 ```

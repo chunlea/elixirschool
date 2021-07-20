@@ -1,74 +1,72 @@
 ---
-version: 1.0.1
-title: Querying
+version: 1.2.0
+title: Consultas
 ---
 
 {% include toc.html %}
 
-Nesta lição, estaremos construindo a aplicação `Example` e o catálogo de filmes que configuramos na [lição anterior](./associations).
+Nesta lição, estaremos construindo a aplicação `Friends` e o catálogo de filmes que configuramos na [lição anterior](./associations).
 
 ## Buscando Registros com `Ecto.Repo`
 
 Lembre-se de que um "repositório" no Ecto é mapeado para um armazenamento de dados, como nosso banco de dados Postgres.
 Toda a comunicação com o banco de dados será feita usando este repositório.
 
-Podemos realizar simples consultas diretamente em nosso `Example.Repo` com a ajuda de algumas funções.
+Podemos realizar simples consultas diretamente em nosso `Friends.Repo` com a ajuda de algumas funções.
 
 ### Buscando Registros por ID
 
-Nós podemos usar a função `Repo.get/3` para carregar um registro vindo do banco de dados pelo seu ID. Essa função requer dois argumentos: uma estrutura "queryable" e o ID do registro para recuperar do banco de dados. Ela retorna uma struct descrevendo o registro encontrado, caso exista. Retorna `nil` se nenhum registro for encontrado.
+Nós podemos usar a função `Repo.get/3` para buscar um registro vindo do banco de dados pelo seu ID. Essa função requer dois argumentos: uma estrutura "queryable" (consultável) e o ID do registro a ser recuperado do banco de dados. Ela retorna uma struct descrevendo o registro encontrado, caso exista. Retorna `nil` se nenhum registro for encontrado.
 
 Vamos dar uma olhada em um exemplo. Abaixo, vamos pegar o filme com o ID 1:
 
 ```elixir
-iex> alias Example.{Repo, Movie}
+iex> alias Friends.{Repo, Movie}
 iex> Repo.get(Movie, 1)
-%Example.Movie{
-  __meta__: #Ecto.Schema.Metadata<:loaded, "movies">,
-  actors: #Ecto.Association.NotLoaded<association :actors is not loaded>,
-  characters: #Ecto.Association.NotLoaded<association :characters is not loaded>,
-  distributor: #Ecto.Association.NotLoaded<association :distributor is not loaded>,
+%Friends.Movie{
+  __meta__: %Ecto.Schema.Metadata<:loaded, "movies">,
+  actors: %Ecto.Association.NotLoaded<association :actors is not loaded>,
+  characters: %Ecto.Association.NotLoaded<association :characters is not loaded>,
+  distributor: %Ecto.Association.NotLoaded<association :distributor is not loaded>,
   id: 1,
   tagline: "Something about video games",
   title: "Ready Player One"
 }
 ```
 
-Note que o primeiro argumento que fornecemos a `Repo.get/3` foi nosso módulo `Movie`. `Movie` é "queryable" pois o módulo usa `Ecto.Schema` e define um `schema` para sua estrutura de dados. Isso dá ao `Movie` acesso ao protocolo `Ecto.Queryable`. Esse protocolo converte uma estrutura de dados em um `Ecto.Query`. Ecto queries são usadas para recuperar dados de um repositório. Mais sobre consultas depois.
+Note que o primeiro argumento que fornecemos a `Repo.get/3` foi nosso módulo `Movie`. `Movie` é "queryable" pois o módulo usa `Ecto.Schema` e define um `schema` para sua estrutura de dados. Isso dá a `Movie` acesso ao protocolo `Ecto.Queryable`. Esse protocolo converte uma estrutura de dados em um `Ecto.Query`. Ecto queries são usadas para recuperar dados de um repositório. Mais sobre consultas depois.
 
 ### Buscando Registros por Atributo
 
-Também podemos buscar registros que atendam a um determinado critério com a função `Repo.get_by/3`. Essa função requer dois argumentos: a estrutura de dados "queryable" e a cláusula com a qual queremos consultar. `Repo.get_by/3` retorna um único resultado do repositório. Vamos ver um exemplo: 
+Também podemos buscar registros que atendam a um determinado critério utilizado a função `Repo.get_by/3`. Essa função requer dois argumentos: a estrutura de dados "queryable" (consultável) e a cláusula com a qual queremos consultar. `Repo.get_by/3` retorna um único resultado do repositório. Vamos ver um exemplo:
 
 ```elixir
-iex> alias Example.Repo
-iex> alias Example.Movie
 iex> Repo.get_by(Movie, title: "Ready Player One")
-%Example.Movie{
-  __meta__: #Ecto.Schema.Metadata<:loaded, "movies">,
-  actors: #Ecto.Association.NotLoaded<association :actors is not loaded>,
-  characters: #Ecto.Association.NotLoaded<association :characters is not loaded>,
-  distributor: #Ecto.Association.NotLoaded<association :distributor is not loaded>,
+%Friends.Movie{
+  __meta__: %Ecto.Schema.Metadata<:loaded, "movies">,
+  actors: %Ecto.Association.NotLoaded<association :actors is not loaded>,
+  characters: %Ecto.Association.NotLoaded<association :characters is not loaded>,
+  distributor: %Ecto.Association.NotLoaded<association :distributor is not loaded>,
   id: 1,
   tagline: "Something about video games",
   title: "Ready Player One"
 }
 ```
 
-Se quisermos escrever consultas mais complexas, ou se quisermos retornar _todos_ registros que atendam a uma determinada condição, precisamos usar o módulo `Ecto.Query`.
+Se quisermos escrever consultas mais complexas, ou se quisermos retornar _todos_ os registros que atendam a uma determinada condição, precisamos usar o módulo `Ecto.Query`.
 
 ## Escrevendo Consultar com `Ecto.Query`
 
-O módulo `Ecto.Query` nos fornece a DSL de consulta que podemos usar para gravar consultas para recuperar dados do repositório da aplicação.
+O módulo `Ecto.Query` nos fornece a DSL de consulta que podemos usar para criar consultas para recuperar dados do repositório da aplicação.
 
-### Criando Consultas com `Ecto.Query.from/2`
+### Criando Consultas baseadas em palavras-chave com `Ecto.Query.from/2`
 
-Podemos criar uma consulta com a função `Ecto.Query.from/2`. Esta função recebe dois argumentos: uma expressão e uma lista de palavras-chave. Vamos criar uma consulta para selecionar todos os filmes do nosso repositório:
+Podemos criar uma consulta com a função `Ecto.Query.from/2`. Esta função recebe dois argumentos: uma expressão e uma lista opcional de palavras-chave. Vamos criar a consulta mais simples para selecionar todos os filmes do nosso repositório:
 
 ```elixir
 import Ecto.Query
-query = from(m in Movie, select: m)
-#Ecto.Query<from m in Example.Movie, select: m>
+query = from(Movie)
+#Ecto.Query<from m0 in Friends.Movie>
 ```
 
 Para executar nossa consulta, usamos a função `Repo.all/2`. Essa função aceita um argumento obrigatório de uma consulta Ecto e retorna todos os registros que atendem às condições da consulta.
@@ -78,11 +76,11 @@ iex> Repo.all(query)
 
 14:58:03.187 [debug] QUERY OK source="movies" db=1.7ms decode=4.2ms
 [
-  %Example.Movie{
-    __meta__: #Ecto.Schema.Metadata<:loaded, "movies">,
-    actors: #Ecto.Association.NotLoaded<association :actors is not loaded>,
-    characters: #Ecto.Association.NotLoaded<association :characters is not loaded>,
-    distributor: #Ecto.Association.NotLoaded<association :distributor is not loaded>,
+  %Friends.Movie{
+    __meta__: %Ecto.Schema.Metadata<:loaded, "movies">,
+    actors: %Ecto.Association.NotLoaded<association :actors is not loaded>,
+    characters: %Ecto.Association.NotLoaded<association :characters is not loaded>,
+    distributor: %Ecto.Association.NotLoaded<association :distributor is not loaded>,
     id: 1,
     tagline: "Something about video games",
     title: "Ready Player One"
@@ -90,123 +88,100 @@ iex> Repo.all(query)
 ]
 ```
 
-#### Usando `from` com Consultas de Palavras-chave
+#### Consultas bindingless com `from`
 
-O exemplo acima dá ao `from/2` um argumento de uma *consulta de palavra-chave*. Quando usar `from` com uma consulta de palavra-chave, o primeiro argumento pode ser uma das duas coisas:
-
-* Uma expressão `in` (ex: `m in Movie`)
-* Um módulo que implementa o protoculo `Ecto.Queryable` (ex: `Movie`)
-
-O segundo argumento é nossa consulta de palavra-chave `select` .
-
-#### Usando `from` com uma Query Expression
-
-Ao usar `from` com uma expressão de consulta, o primeiro argumento deve ser um valor que implemente o protocolo `Ecto.Queryable` (ex: `Movie`). O segundo argumento é uma expressão. Vamos ver um exemplo: 
+O exemplo acima não tem a parte mais divertida das declarações (statements) SQL. Nós frequentemente queremos não apenas buscar campos específicos ou filtrar registros por alguma condição. Vamos carregar `title` e `tagline` de todos os filmes que tenham o título `"Ready Player One"`:
 
 ```elixir
-iex> query = select(Movie, [m], m)
-#Ecto.Query<from m in Example.Movie, select: m>
+iex> query = from(Movie, where: [title: "Ready Player One"], select: [:title, :tagline])
+#Ecto.Query<from m0 in Friends.Movie, where: m0.title == "Ready Player One",
+ select: [:title, :tagline]>
+
 iex> Repo.all(query)
-
-06:16:20.854 [debug] QUERY OK source="movies" db=0.9ms
+SELECT m0."title", m0."tagline" FROM "movies" AS m0 WHERE (m0."title" = 'Ready Player One') []
 [
-  %Example.Movie{
-    __meta__: #Ecto.Schema.Metadata<:loaded, "movies">,
-    actors: #Ecto.Association.NotLoaded<association :actors is not loaded>,
-    characters: #Ecto.Association.NotLoaded<association :characters is not loaded>,
-    distributor: #Ecto.Association.NotLoaded<association :distributor is not loaded>,
-    id: 1,
-    tagline: "Something about video games",
-    title: "Ready Player One"
-  }
-]
-```
-
-Você pode usar expressões de consulta quando não precisar de uma instrução `in` (`m in Movie`). Você não precisa de uma declaração `in` quando não precisa de uma referência à estrutura de dados. Nossa consulta acima não requer uma referência à estrutura de dados--não estamos, por exemplo, selecionando filmes em que uma determinada condição é atendida. Portanto, não há necessidade de usar expressões `in` e consultas de palavras-chave.
-
-### Usando Expressão `select`
-
-Usamos a função `Ecto.Query.select/3` para especificar a parte da instrução de seleção da nossa consulta. Se quisermos selecionar apenas certos campos, podemos especificar esses campos como uma lista de átomos ou referenciando as chaves da estrutura. Vamos dar uma olhada na primeira abordagem:
-
-```elixir
-iex> query = from(Movie, select: [:title])                                            
-#Ecto.Query<from m in Example.Movie, select: [:title]>
-iex> Repo.all(query)
-
-15:15:25.842 [debug] QUERY OK source="movies" db=1.3ms
-[
-  %Example.Movie{
-    __meta__: #Ecto.Schema.Metadata<:loaded, "movies">,
-    actors: #Ecto.Association.NotLoaded<association :actors is not loaded>,
-    characters: #Ecto.Association.NotLoaded<association :characters is not loaded>,
-    distributor: #Ecto.Association.NotLoaded<association :distributor is not loaded>,
+  %Friends.Movie{
+    __meta__: %Ecto.Schema.Metadata<:loaded, "movies">,
+    actors: %Ecto.Association.NotLoaded<association :actors is not loaded>,
+    characters: %Ecto.Association.NotLoaded<association :characters is not loaded>,
     id: nil,
-    tagline: nil,
+    tagline: "Something about video games",
     title: "Ready Player One"
   }
 ]
 ```
 
-Note que nós não usamos uma expressão `in` para o primeiro argumento dado à nossa função `from`. Isso porque não precisamos criar uma referência à nossa estrutura de dados para usar uma lista de palavras-chave com `select`.
+Note que a estrutura (struct) retornada tem somente os campos `tagline` e `title` – esse é o resultado da parte do nosso `select:`.
 
-Essa abordagem retorna uma estrutura apenas com o campo especificado, `title`, preenchido.
+Consultas como esta são chamadas *bindingless*, porque elas são simples o suficiente para não requerer bindings.
 
-A segunda abordagem se comporta de maneira um pouco diferente. Desta vez, nós *precisamos* usar uma expressão `in`. Isso porque precisamos criar uma referência para nossa estrutura de dados para especificar a chave `title` da estrutura do filme:
+#### Bindings em consultas
+
+Até agora, nós usamos um módulo para implementar o protocolo `Ecto.Queryable` (ex: `Movie`) como o primeiro argumento da macro `from`. No entanto, nós podemos usar também a expressão `in`, assim:
 
 ```elixir
-iex(15)> query = from(m in Movie, select: m.title)   
-#Ecto.Query<from m in Example.Movie, select: m.title>
-iex(16)> Repo.all(query)                             
+iex> query = from(m in Movie)
+#Ecto.Query<from m0 in Friends.Movie>
+```
 
-15:06:12.752 [debug] QUERY OK source="movies" db=4.5ms queue=0.1ms
+Nesse caso, nós chamamos `m` de *binding* (atribuição). Bindings são extremamente úteis, porque eles permitem que nós referenciemos módulos em outras partes de uma consulta (query). Vamos selecionar os títulos de todos os filmes que tenham o `id` menor que `2`:
+
+```elixir
+iex> query = from(m in Movie, where: m.id < 2, select: m.title)
+#Ecto.Query<from m0 in Friends.Movie, where: m0.id < 2, select: m0.title>
+
+iex> Repo.all(query)
+SELECT m0."title" FROM "movies" AS m0 WHERE (m0."id" < 2) []
 ["Ready Player One"]
 ```
 
-Observe que essa abordagem ao uso de `select` retorna uma lista contendo os valores selecionados.
-
-### Usando Expressões `where`
-
-Podemos usar expressões `where` para incluir cláusulas `where` em nossas consultas. Várias expressões `where` são combinadas em instruções SQL `WHERE AND`.
+Um ponto muito importante aqui é como a saída de uma consulta é alterada. Usando uma *expressão* com uma atribuição na parte do `select:` isso nos permite especificar exatamente a forma como os campos selecionados serão retornados. Nós podemos solicitar o retorno como uma tupla, por exemplo:
 
 ```elixir
-iex> query = from(m in Movie, where: m.title == "Ready Player One")                   
-#Ecto.Query<from m in Example.Movie, where: m.title == "Ready Player One">
-iex> Repo.all(query)
+iex> query = from(m in Movie, where: m.id < 2, select: {m.title})
 
-15:18:35.355 [debug] QUERY OK source="movies" db=4.1ms queue=0.1ms
-[
-  %Example.Movie{
-    __meta__: #Ecto.Schema.Metadata<:loaded, "movies">,
-    actors: #Ecto.Association.NotLoaded<association :actors is not loaded>,
-    characters: #Ecto.Association.NotLoaded<association :characters is not loaded>,
-    distributor: #Ecto.Association.NotLoaded<association :distributor is not loaded>,
-    id: 1,
-    tagline: "Something about video games",
-    title: "Ready Player One"
-  }
-]
+iex> Repo.all(query)
+[{"Ready Player One"}]
 ```
 
-Podemos usar expressões `where` junto com `select`:
+É sempre uma boa ideia começar com uma simples consulta sem atribuição (bindingless) e introduzir a atribuição sempre que você precisar referenciar sua estrutura de dados. Mais sobre atribuições (bindings) em consultas pode ser encontrado na [documentação do Ecto](https://hexdocs.pm/ecto/Ecto.Query.html#module-query-expressions)
+
+### Consultas baseadas em macros
+
+Nos exemplos acima nós usamos as palavras-chave `select:` e `where:` dentro da macro `from` para construir uma consulta (query) - essas são chamadas de *consultas baseadas em palavras-chave*. Há, no entanto, outra forma de compor consultas - baseadas em macros. Ecto fornece macros para cada palavra-chave, como `select/3` or `where/3`.
+
+Cada macro aceita um valor *queryable* (buscável), *uma lista explícita de bindings* e a mesma expressão que você forneceu para sua consulta de palavras-chave análoga:
 
 ```elixir
-iex> query = from(m in Movie, where: m.title == "Ready Player One", select: m.tagline)
-#Ecto.Query<from m in Example.Movie, where: m.title == "Ready Player One", select: m.tagline>
-iex> Repo.all(query)
+iex> query = select(Movie, [m], m.title)
+#Ecto.Query<from m0 in Friends.Movie, select: m0.title>
 
-15:19:11.904 [debug] QUERY OK source="movies" db=4.1ms
-["Something about video games"]
+iex> Repo.all(query)
+SELECT m0."title" FROM "movies" AS m0 []
+["Ready Player One"]
 ```
+
+Uma boa coisa sobre macros é que elas podem trabalhar muito bem com pipes:
+
+```elixir
+iex> Movie \
+...>  |> where([m], m.id < 2) \
+...>  |> select([m], {m.title}) \
+...>  |> Repo.all
+[{"Ready Player One"}]
+```
+
+Note que para continuar escrevendo depois da quebra de linha, use o caracter `\`.
 
 ### Usando `where` com Valores Interpolados
 
-Para usar valores interpolados ou expressões Elixir em nossas cláusulas where, precisamos usar o operador pin, `^`. Isso nos permite _pregar_ um valor para uma variável e se referir ao valor fixado, em vez de vincular essa variável.
+Para usar valores interpolados ou expressões Elixir em nossas cláusulas where, precisamos usar o operador pin, `^`. Isso nos permite _fixar_ um valor para uma variável e se referir ao valor fixado, em vez de vincular essa variável.
 
 ```elixir
 iex> title = "Ready Player One"
 "Ready Player One"
-iex> query = from(m in Movie, where: m.title == ^title, select: m.tagline)            
-#Ecto.Query<from m in Example.Movie, where: m.title == ^"Ready Player One",
+iex> query = from(m in Movie, where: m.title == ^title, select: m.tagline)
+%Ecto.Query<from m in Friends.Movie, where: m.title == ^"Ready Player One",
  select: m.tagline>
 iex> Repo.all(query)
 
@@ -222,7 +197,7 @@ Primeiro, vamos escrever uma expressão de consulta usando a função `first/2`:
 
 ```elixir
 iex> first(Movie)
-#Ecto.Query<from m in Example.Movie, order_by: [desc: m.id], limit: 1>
+%Ecto.Query<from m in Friends.Movie, order_by: [desc: m.id], limit: 1>
 ```
 
 Então passamos nossa consulta para a função `Repo.one/2` para obter nosso resultado:
@@ -230,8 +205,8 @@ Então passamos nossa consulta para a função `Repo.one/2` para obter nosso res
 ```elixir
 iex> Movie |> first() |> Repo.one()
 
-06:36:14.234 [debug] QUERY OK source="movies" db=3.7ms
-%Example.Movie{
+SELECT m0."id", m0."title", m0."tagline" FROM "movies" AS m0 ORDER BY m0."id" LIMIT 1 []
+%Friends.Movie{
   __meta__: #Ecto.Schema.Metadata<:loaded, "movies">,
   actors: #Ecto.Association.NotLoaded<association :actors is not loaded>,
   characters: #Ecto.Association.NotLoaded<association :characters is not loaded>,
@@ -259,38 +234,39 @@ Vamos dar uma olhada para ver o que acontece quando tentamos perguntar os atores
 ```elixir
 iex> movie = Repo.get(Movie, 1)
 iex> movie.actors
-#Ecto.Association.NotLoaded<association :actors is not loaded>
+%Ecto.Association.NotLoaded<association :actors is not loaded>
 ```
 
-_Não podemos_ acessar esses atores associados, a menos que os pré-carregemos. Existem algumas maneiras diferentes de pré-carregar registros com o Ecto.
+_Não podemos_ acessar esses atores associados, a menos que os pré-carreguemos. Existem algumas maneiras diferentes de pré-carregar registros com o Ecto.
 
 #### Pré-carregamento Com Duas Consultas
 
 A consulta a seguir pré-carregará os registros associados em uma consulta _separada_.
 
 ```elixir
-iex> import Ecto.Query
-Ecto.Query
 iex> Repo.all(from m in Movie, preload: [:actors])
+
+13:17:28.354 [debug] QUERY OK source="movies" db=2.3ms queue=0.1ms
+13:17:28.357 [debug] QUERY OK source="actors" db=2.4ms
 [
-  %Example.Movie{
-    __meta__: #Ecto.Schema.Metadata<:loaded, "movies">,
+  %Friends.Movie{
+    __meta__: %Ecto.Schema.Metadata<:loaded, "movies">,
     actors: [
-      %Example.Actor{
-        __meta__: #Ecto.Schema.Metadata<:loaded, "actors">,
+      %Friends.Actor{
+        __meta__: %Ecto.Schema.Metadata<:loaded, "actors">,
         id: 1,
-        movies: #Ecto.Association.NotLoaded<association :movies is not loaded>,
-        name: "Bob"
+        movies: %Ecto.Association.NotLoaded<association :movies is not loaded>,
+        name: "Tyler Sheridan"
       },
-      %Example.Actor{
-        __meta__: #Ecto.Schema.Metadata<:loaded, "actors">,
+      %Friends.Actor{
+        __meta__: %Ecto.Schema.Metadata<:loaded, "actors">,
         id: 2,
-        movies: #Ecto.Association.NotLoaded<association :movies is not loaded>,
+        movies: %Ecto.Association.NotLoaded<association :movies is not loaded>,
         name: "Gary"
       }
     ],
-    characters: #Ecto.Association.NotLoaded<association :characters is not loaded>,
-    distributor: #Ecto.Association.NotLoaded<association :distributor is not loaded>,
+    characters: %Ecto.Association.NotLoaded<association :characters is not loaded>,
+    distributor: %Ecto.Association.NotLoaded<association :distributor is not loaded>,
     id: 1,
     tagline: "Something about video games",
     title: "Ready Player One"
@@ -298,7 +274,7 @@ iex> Repo.all(from m in Movie, preload: [:actors])
 ]
 ```
 
-Podemos ver que a linha de código acima executou duas consultas ao banco de dados. Um para todos os filmes e outro para todos os atores com os IDs de filme fornecidos.
+Podemos ver que a linha de código acima executou duas consultas no banco de dados. Um para todos os filmes e outro para todos os atores com os IDs de filme fornecidos.
 
 
 #### Pré-carregamento Com Uma Consulta
@@ -306,26 +282,28 @@ Podemos reduzir nossas consultas ao banco de dados com o seguinte:
 
 ```elixir
 iex> query = from(m in Movie, join: a in assoc(m, :actors), preload: [actors: a])
-iex> Repo.all(query)  
+iex> Repo.all(query)
+
+13:18:52.053 [debug] QUERY OK source="movies" db=3.7ms
 [
-  %Example.Movie{
-    __meta__: #Ecto.Schema.Metadata<:loaded, "movies">,
+  %Friends.Movie{
+    __meta__: %Ecto.Schema.Metadata<:loaded, "movies">,
     actors: [
-      %Example.Actor{
-        __meta__: #Ecto.Schema.Metadata<:loaded, "actors">,
+      %Friends.Actor{
+        __meta__: %Ecto.Schema.Metadata<:loaded, "actors">,
         id: 1,
-        movies: #Ecto.Association.NotLoaded<association :movies is not loaded>,
-        name: "Bob"
+        movies: %Ecto.Association.NotLoaded<association :movies is not loaded>,
+        name: "Tyler Sheridan"
       },
-      %Example.Actor{
-        __meta__: #Ecto.Schema.Metadata<:loaded, "actors">,
+      %Friends.Actor{
+        __meta__: %Ecto.Schema.Metadata<:loaded, "actors">,
         id: 2,
-        movies: #Ecto.Association.NotLoaded<association :movies is not loaded>,
+        movies: %Ecto.Association.NotLoaded<association :movies is not loaded>,
         name: "Gary"
       }
     ],
-    characters: #Ecto.Association.NotLoaded<association :characters is not loaded>,
-    distributor: #Ecto.Association.NotLoaded<association :distributor is not loaded>,
+    characters: %Ecto.Association.NotLoaded<association :characters is not loaded>,
+    distributor: %Ecto.Association.NotLoaded<association :distributor is not loaded>,
     id: 1,
     tagline: "Something about video games",
     title: "Ready Player One"
@@ -338,7 +316,7 @@ Isso nos permite executar apenas uma chamada de banco de dados. Ele também tem 
 ```elixir
 Repo.all from m in Movie,
   join: a in assoc(m, :actors),
-  where: a.name == "John Wayne"
+  where: a.name == "John Wayne",
   preload: [actors: a]
 ```
 
@@ -350,55 +328,55 @@ Também podemos pré-carregar os esquemas associados de registros que já foram 
 
 ```elixir
 iex> movie = Repo.get(Movie, 1)
-%Example.Movie{
-  __meta__: #Ecto.Schema.Metadata<:loaded, "movies">,
-  actors: #Ecto.Association.NotLoaded<association :actors is not loaded>, # actors are NOT LOADED!!
-  characters: #Ecto.Association.NotLoaded<association :characters is not loaded>,
-  distributor: #Ecto.Association.NotLoaded<association :distributor is not loaded>,
+%Friends.Movie{
+  __meta__: %Ecto.Schema.Metadata<:loaded, "movies">,
+  actors: %Ecto.Association.NotLoaded<association :actors is not loaded>, # actors are NOT LOADED!!
+  characters: %Ecto.Association.NotLoaded<association :characters is not loaded>,
+  distributor: %Ecto.Association.NotLoaded<association :distributor is not loaded>,
   id: 1,
   tagline: "Something about video games",
   title: "Ready Player One"
 }
 iex> movie = Repo.preload(movie, :actors)
-%Example.Movie{
-  __meta__: #Ecto.Schema.Metadata<:loaded, "movies">,
+%Friends.Movie{
+  __meta__: %Ecto.Schema.Metadata<:loaded, "movies">,
   actors: [
-    %Example.Actor{
-      __meta__: #Ecto.Schema.Metadata<:loaded, "actors">,
+    %Friends.Actor{
+      __meta__: %Ecto.Schema.Metadata<:loaded, "actors">,
       id: 1,
-      movies: #Ecto.Association.NotLoaded<association :movies is not loaded>,
-      name: "Bob"
+      movies: %Ecto.Association.NotLoaded<association :movies is not loaded>,
+      name: "Tyler Sheridan"
     },
-    %Example.Actor{
-      __meta__: #Ecto.Schema.Metadata<:loaded, "actors">,
+    %Friends.Actor{
+      __meta__: %Ecto.Schema.Metadata<:loaded, "actors">,
       id: 2,
-      movies: #Ecto.Association.NotLoaded<association :movies is not loaded>,
+      movies: %Ecto.Association.NotLoaded<association :movies is not loaded>,
       name: "Gary"
     }
   ], # actors are LOADED!!
   characters: [],
-  distributor: #Ecto.Association.NotLoaded<association :distributor is not loaded>,
+  distributor: %Ecto.Association.NotLoaded<association :distributor is not loaded>,
   id: 1,
   tagline: "Something about video games",
   title: "Ready Player One"
 }
 ```
 
-Agora podemos pedir um filme para seus atores:
+Agora podemos pedir a `movie` (filme) a lista de atores/atrizes:
 
 ```elixir
 iex> movie.actors
 [
-  %Example.Actor{
-    __meta__: #Ecto.Schema.Metadata<:loaded, "actors">,
+  %Friends.Actor{
+    __meta__: %Ecto.Schema.Metadata<:loaded, "actors">,
     id: 1,
-    movies: #Ecto.Association.NotLoaded<association :movies is not loaded>,
-    name: "Bob"
+    movies: %Ecto.Association.NotLoaded<association :movies is not loaded>,
+    name: "Tyler Sheridan"
   },
-  %Example.Actor{
-    __meta__: #Ecto.Schema.Metadata<:loaded, "actors">,
+  %Friends.Actor{
+    __meta__: %Ecto.Schema.Metadata<:loaded, "actors">,
     id: 2,
-    movies: #Ecto.Association.NotLoaded<association :movies is not loaded>,
+    movies: %Ecto.Association.NotLoaded<association :movies is not loaded>,
     name: "Gary"
   }
 ]
@@ -409,14 +387,15 @@ iex> movie.actors
 Podemos executar consultas que incluem instruções de junção com a ajuda da função `Ecto.Query.join/5`.
 
 ```elixir
+iex> alias Friends.Character
 iex> query = from m in Movie,
               join: c in Character,
               on: m.id == c.movie_id,
-              where: c.name == "Video Game Guy",
+              where: c.name == "Wade Watts",
               select: {m.title, c.name}
 iex> Repo.all(query)
 15:28:23.756 [debug] QUERY OK source="movies" db=5.5ms
-[{"Ready Player One", "Video Game Guy"}]
+[{"Ready Player One", "Wade Watts"}]
 ```
 
 A expressão `on` também pode usar uma lista de palavras-chave:
@@ -424,19 +403,19 @@ A expressão `on` também pode usar uma lista de palavras-chave:
 ```elixir
 from m in Movie,
   join: c in Character,
-  on: [id: c.movie_id], # keyword list
-  where: c.name == "Video Game Guy",
+  on: [id: c.movie_id], # lista de palavras-chave
+  where: c.name == "Wade Watts",
   select: {m.title, c.name}
 ```
 
-No exemplo acima, estamos nos unindo em um esquema Ecto, `m in Movie`. Também podemos fazer junção de uma Ecto query. Digamos que nossa tabela de filmes tenha uma coluna `stars`, onde armazenamos a "classificação por estrelas" do filme, um número de 1 a 5.
+No exemplo acima, estamos fazendo junção em um esquema Ecto, `m in Movie`. Também podemos fazer junção de uma consulta Ecto. Digamos que nossa tabela de filmes tenha uma coluna `stars`, onde armazenamos a "classificação por estrelas" do filme, um número de 1 a 5.
 
 ```elixir
 movies = from m in Movie, where: [stars: 5]
 from c in Character,
   join: ^movies,
-  on: [id: c.movie_id], # keyword list
-  where: c.name == "Video Game Guy",
+  on: [id: c.movie_id], # lista de palavras-chave
+  where: c.name == "Wade Watts",
   select: {m.title, c.name}
 ```
 

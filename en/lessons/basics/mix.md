@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.1.2
 title: Mix
 ---
 
@@ -30,8 +30,6 @@ From the output we can see that Mix has created our directory and a number of bo
 * creating .formatter.exs
 * creating .gitignore
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/example.ex
 * creating test
@@ -44,7 +42,7 @@ Here we configure our application, dependencies, environment, and version.
 Open the file in your favorite editor, you should see something like this (comments removed for brevity):
 
 ```elixir
-defmodule Example.Mixfile do
+defmodule Example.MixProject do
   use Mix.Project
 
   def project do
@@ -106,7 +104,7 @@ Compiled lib/example.ex
 Generated example app
 ```
 
-When we compile a project Mix creates a `_build` directory for our artifacts.
+When we compile a project, Mix creates a `_build` directory for our artifacts.
 If we look inside `_build` we will see our compiled application: `example.app`.
 
 ## Managing Dependencies
@@ -144,7 +142,7 @@ Now we're prepared to add dependencies when the time comes.
 ## Environments
 
 Mix, much like Bundler, supports differing environments.
-Out of the box mix is configured to have three environments:
+Out of the box Mix is configured to have three environments:
 
 - `:dev` — The default environment.
 - `:test` — Used by `mix test`. Covered further in our next lesson.

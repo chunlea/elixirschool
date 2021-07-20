@@ -50,7 +50,7 @@ end
 Chúng ta (hoặc những người khác) có thể truy cập vào tài liệu của module sử dụng hàm `h` trong IEx.
 
 ```elixir
-iex> c("greeter.ex")
+iex> c("greeter.ex", ".")
 [Greeter]
 
 iex> h Greeter
@@ -133,8 +133,6 @@ $ mix new greet_everyone
 * creating README.md
 * creating .gitignore
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/greet_everyone.ex
 * creating test

@@ -1,5 +1,5 @@
 ---
-version: 1.1.0
+version: 1.1.1
 title: Mix
 ---
 
@@ -30,8 +30,6 @@ $ mix new example
 * creating .formatter.exs
 * creating .gitignore
 * creating mix.exs
-* creating config
-* creating config/config.exs
 * creating lib
 * creating lib/example.ex
 * creating test
@@ -44,7 +42,7 @@ $ mix new example
 Ανοίξτε το αρχείο στον αγαπημένο σας επεξεργαστή κειμένου, θα πρέπει να βλέπετε κάτι σαν και αυτό (τα σχόλια έχουν αφαιρεθεί για συντομία):
 
 ```elixir
-defmodule Example.Mixfile do
+defmodule Example.Mix do
   use Mix.Project
 
   def project do
